@@ -12,7 +12,7 @@
 #import "CKCamera.h"
 #import "CKCameraOverlayView.h"
 #import "CKMockPreview.h"
-
+#import <AudioToolbox/AudioToolbox.h>
 static void * CapturingStillImageContext = &CapturingStillImageContext;
 static void * SessionRunningContext = &SessionRunningContext;
 
@@ -557,6 +557,13 @@ RCT_ENUM_CONVERTER(CKCameraZoomMode, (@{
         }
 
         // Capture a still image.
+
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"photoShutter2" ofType:@"caf"];
+        NSURL *filePath = [NSURL fileURLWithPath:path isDirectory:NO];
+        SystemSoundID soundID;
+        AudioServicesCreateSystemSoundID((__bridge CFURLRef)filePath, &soundID);
+        AudioServicesPlaySystemSound(soundID);
+        AudioServicesPlaySystemSound(soundID);
         [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:connection completionHandler:^( CMSampleBufferRef imageDataSampleBuffer, NSError *error ) {
             if (!imageDataSampleBuffer) {
                 NSLog(@"Could not capture still image: %@", error);
@@ -988,29 +995,29 @@ RCT_ENUM_CONVERTER(CKCameraZoomMode, (@{
 - (void)addObservers
 {
 
-    if (!self.isAddedOberver) {
-        [self.session addObserver:self forKeyPath:@"running" options:NSKeyValueObservingOptionNew context:SessionRunningContext];
-        [self.stillImageOutput addObserver:self forKeyPath:@"capturingStillImage" options:NSKeyValueObservingOptionNew context:CapturingStillImageContext];
+    // if (!self.isAddedOberver) {
+    //     [self.session addObserver:self forKeyPath:@"running" options:NSKeyValueObservingOptionNew context:SessionRunningContext];
+    //     [self.stillImageOutput addObserver:self forKeyPath:@"capturingStillImage" options:NSKeyValueObservingOptionNew context:CapturingStillImageContext];
 
-        [self.videoDeviceInput.device addObserver:self forKeyPath:@"adjustingFocus" options:NSKeyValueObservingOptionNew context:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(subjectAreaDidChange:) name:AVCaptureDeviceSubjectAreaDidChangeNotification object:self.videoDeviceInput.device];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionRuntimeError:) name:AVCaptureSessionRuntimeErrorNotification object:self.session];
-        // A session can only run when the app is full screen. It will be interrupted in a multi-app layout, introduced in iOS 9,
-        // see also the documentation of AVCaptureSessionInterruptionReason. Add observers to handle these session interruptions
-        // and show a preview is paused message. See the documentation of AVCaptureSessionWasInterruptedNotification for other
-        // interruption reasons.
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionWasInterrupted:) name:AVCaptureSessionWasInterruptedNotification object:self.session];
-        //Observers for re-usage animation when app go to the background and back
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(didEnterBackground:) name:UIApplicationDidEnterBackgroundNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(willEnterForeground:)
-                                                     name:UIApplicationWillEnterForegroundNotification
-                                                   object:nil];
+    //     [self.videoDeviceInput.device addObserver:self forKeyPath:@"adjustingFocus" options:NSKeyValueObservingOptionNew context:nil];
+    //     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(subjectAreaDidChange:) name:AVCaptureDeviceSubjectAreaDidChangeNotification object:self.videoDeviceInput.device];
+    //     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionRuntimeError:) name:AVCaptureSessionRuntimeErrorNotification object:self.session];
+    //     // A session can only run when the app is full screen. It will be interrupted in a multi-app layout, introduced in iOS 9,
+    //     // see also the documentation of AVCaptureSessionInterruptionReason. Add observers to handle these session interruptions
+    //     // and show a preview is paused message. See the documentation of AVCaptureSessionWasInterruptedNotification for other
+    //     // interruption reasons.
+    //     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionWasInterrupted:) name:AVCaptureSessionWasInterruptedNotification object:self.session];
+    //     //Observers for re-usage animation when app go to the background and back
+    //     [[NSNotificationCenter defaultCenter] addObserver:self
+    //                                              selector:@selector(didEnterBackground:) name:UIApplicationDidEnterBackgroundNotification
+    //                                                object:nil];
+    //     [[NSNotificationCenter defaultCenter] addObserver:self
+    //                                              selector:@selector(willEnterForeground:)
+    //                                                  name:UIApplicationWillEnterForegroundNotification
+    //                                                object:nil];
 
-        self.isAddedOberver = YES;
-    }
+    //     self.isAddedOberver = YES;
+    // }
 }
 
 //UIApplicationDidEnterBackgroundNotification       NS_AVAILABLE_IOS(4_0);
