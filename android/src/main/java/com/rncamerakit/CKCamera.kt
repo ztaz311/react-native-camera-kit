@@ -237,7 +237,7 @@ class CKCamera(context: ThemedReactContext) : FrameLayout(context), LifecycleObs
             // A variable number of use-cases can be passed here -
             // camera provides access to CameraControl & CameraInfo
             camera = cameraProvider.bindToLifecycle(getActivity() as AppCompatActivity, cameraSelector, *useCases.toTypedArray())
-
+            camera?.cameraControl?.setExposureCompensationIndex(1)
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(viewFinder.surfaceProvider)
         } catch (exc: Exception) {
